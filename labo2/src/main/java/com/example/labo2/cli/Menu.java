@@ -1,0 +1,107 @@
+package com.example.labo2.cli;
+
+import com.example.labo2.entity.Empleado;
+import com.example.labo2.entity.Proyecto;
+import com.example.labo2.service.EmpleadoService;
+import com.example.labo2.service.ProyectoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
+
+@Component
+public class Menu {
+
+    @Autowired
+    private EmpleadoService empleadoService;
+
+    @Autowired
+    private ProyectoService proyectoService;
+
+    private final Scanner scanner = new Scanner(System.in);
+
+    public void mostrar() {
+        int opcion;
+
+        do {
+            System.out.println("\n╔══════════════════════════════════════╗");
+            System.out.println("║        MENÚ PRINCIPAL - LABO2        ║");
+            System.out.println("╠══════════════════════════════════════╣");
+            System.out.println("║ 1. Listar empleados                  ║");
+            System.out.println("║ 2. Crear nuevo empleado              ║");
+            System.out.println("║ 3. Listar proyectos                  ║");
+            System.out.println("║ 4. Crear nuevo proyecto              ║");
+            System.out.println("║ 0. Salir                             ║");
+            System.out.println("╚══════════════════════════════════════╝");
+            System.out.print("Selecciona una opción: ");
+            opcion = scanner.nextInt();
+            scanner.nextLine(); // Limpiar buffer
+
+            switch (opcion) {
+                case 1 -> listarEmpleados();
+                case 2 -> crearEmpleado();
+                case 3 -> listarProyectos();
+                case 4 -> crearProyecto();
+                case 0 -> System.out.println("¡Hasta pronto!");
+                default -> System.out.println("Opción inválida.");
+            }
+
+        } while (opcion != 0);
+    }
+
+    private void listarEmpleados() {
+        List<Empleado> empleados = empleadoService.listarTodos();
+        if (empleados.isEmpty()) {
+            System.out.println("No hay empleados registrados.");
+        } else {
+            System.out.println("Lista de empleados:");
+            empleados.forEach(e -> System.out.println("• " + e.getId() + " - " + e.getNombre() + " " + e.getApellido()));
+        }
+    }
+
+    private void crearEmpleado() {
+        Empleado emp = new Empleado();
+
+        System.out.print("Nombre: ");
+        emp.setNombre(scanner.nextLine());
+
+        System.out.print("Apellido: ");
+        emp.setApellido(scanner.nextLine());
+
+        System.out.print("Email: ");
+        emp.setEmail(scanner.nextLine());
+
+        emp.setFechaIngreso(LocalDate.now());
+        emp.setPuesto("Sin definir");
+
+        empleadoService.guardar(emp);
+        System.out.println("Empleado creado correctamente.");
+    }
+
+    private void listarProyectos() {
+        List<Proyecto> proyectos = proyectoService.listarTodos();
+        if (proyectos.isEmpty()) {
+            System.out.println("No hay proyectos registrados.");
+        } else {
+            System.out.println("Lista de proyectos:");
+            proyectos.forEach(p -> System.out.println("• " + p.getId() + " - " + p.getNombre()));
+        }
+    }
+
+    private void crearProyecto() {
+        Proyecto proyecto = new Proyecto();
+
+        System.out.print("Código del proyecto: ");
+        proyecto.setCodigo(scanner.nextLine());
+
+        System.out.print("Nombre del proyecto: ");
+        proyecto.setNombre(scanner.nextLine());
+
+
+        proyectoService.guardar(proyecto);
+        System.out.println("Proyecto creado correctamente.");
+    }
+}
