@@ -1,13 +1,10 @@
 package com.example.labo2.cli;
 
-import com.example.labo2.entity.Departamento;
-import com.example.labo2.entity.Empleado;
-import com.example.labo2.entity.Proyecto;
-import com.example.labo2.service.DepartamentoService;
-import com.example.labo2.service.EmpleadoService;
-import com.example.labo2.service.ProyectoService;
+import com.example.labo2.entity.*;
+import com.example.labo2.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -27,6 +24,15 @@ public class Menu {
     @Autowired
     private DepartamentoService departamentoService;
 
+    @Autowired
+    private TecnologiaService tecnologiaService; // Inyección del servicio
+
+    @Autowired
+    private ClienteService clienteService;
+
+    @Autowired
+    private CategoriaService categoriaService;
+
     private final Scanner scanner = new Scanner(System.in);
 
     public void mostrar() {
@@ -41,6 +47,9 @@ public class Menu {
             System.out.println("║ 3. Listar proyectos                  ║");
             System.out.println("║ 4. Crear nuevo proyecto              ║");
             System.out.println("║ 5. Departamentos                     ║");
+            System.out.println("║ 6. Tecnologías                       ║");
+            System.out.println("║ 7. Clientes                          ║");
+            System.out.println("║ 8. Categorías                        ║");
             System.out.println("║ 0. Salir                             ║");
             System.out.println("╚══════════════════════════════════════╝");
             System.out.print("Selecciona una opción: ");
@@ -53,6 +62,9 @@ public class Menu {
                 case 3 -> listarProyectos();
                 case 4 -> crearProyecto();
                 case 5 -> gestionarDepartamentos();
+                case 6 -> tecnologiaService.gestionarTecnologias(); // Llamada al servicio
+                case 7 -> clienteService.gestionarClientes();
+                case 8 -> categoriaService.gestionarCategorias();
                 case 0 -> System.out.println("¡Hasta pronto!");
                 default -> System.out.println("Opción inválida.");
             }
@@ -125,7 +137,21 @@ public class Menu {
             System.out.println("No hay proyectos registrados.");
         } else {
             System.out.println("Lista de proyectos:");
-            proyectos.forEach(p -> System.out.println("• " + p.getId() + " - " + p.getNombre()));
+            proyectos.forEach(p -> {
+                System.out.println("• ID: " + p.getId());
+                System.out.println("  Código: " + p.getCodigo());
+                System.out.println("  Nombre: " + p.getNombre());
+                System.out.println("  Cliente: " + (p.getCliente() != null ? p.getCliente().getNombre() : "No asignado"));
+                System.out.println("  Categoría: " + (p.getCategoria() != null ? p.getCategoria().getNombre() : "No asignada"));
+                System.out.println("  Líder: " + (p.getLider() != null ? p.getLider().getNombre() + " " + p.getLider().getApellido() : "No asignado"));
+                System.out.println("  Empleados participantes:");
+                if (p.getEmpleados() != null && !p.getEmpleados().isEmpty()) {
+                    p.getEmpleados().forEach(e -> System.out.println("    - " + e.getNombre() + " " + e.getApellido()));
+                } else {
+                    System.out.println("    No hay empleados asignados.");
+                }
+                System.out.println();
+            });
         }
     }
 
@@ -137,6 +163,38 @@ public class Menu {
 
         System.out.print("Nombre del proyecto: ");
         proyecto.setNombre(scanner.nextLine());
+
+        System.out.print("ID del cliente: ");
+        Long clienteId = scanner.nextLong();
+        scanner.nextLine(); // Limpiar buffer
+
+        Cliente cliente = clienteService.listarTodos()
+                .stream()
+                .filter(c -> c.getId().equals(clienteId))
+                .findFirst()
+                .orElse(null);
+
+        if (cliente == null) {
+            System.out.println("Cliente no encontrado.");
+            return;
+        }
+        proyecto.setCliente(cliente);
+
+        System.out.print("ID de la categoría: ");
+        Long categoriaId = scanner.nextLong();
+        scanner.nextLine(); // Limpiar buffer
+
+        Categoria categoria = categoriaService.listarTodos()
+                .stream()
+                .filter(cat -> cat.getId().equals(categoriaId))
+                .findFirst()
+                .orElse(null);
+
+        if (categoria == null) {
+            System.out.println("Categoría no encontrada.");
+            return;
+        }
+        proyecto.setCategoria(categoria);
 
         System.out.print("ID del líder del proyecto: ");
         Long liderId = scanner.nextLong();
