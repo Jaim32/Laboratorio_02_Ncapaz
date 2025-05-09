@@ -42,6 +42,10 @@ public class Menu {
     @Autowired
     private AreaService areaService;
 
+    @Autowired
+    private EliminarService eliminarService;
+
+
     private final Scanner scanner = new Scanner(System.in);
 
     public void mostrar() {
@@ -61,7 +65,8 @@ public class Menu {
             System.out.println("║ 8. Categorías                        ║");
             System.out.println("║ 9. Evaluar empleado                  ║");
             System.out.println("║ 10. Capacitaciones                   ║");
-            System.out.println("║ 11. Asignar mentor                   ║");
+            System.out.println("║ 11. Eliminar                         ║");
+            System.out.println("║ 12. Asignar mentor                   ║");
             System.out.println("║ 0. Salir                             ║");
             System.out.println("╚══════════════════════════════════════╝");
             System.out.print("Selecciona una opción: ");
@@ -79,7 +84,8 @@ public class Menu {
                 case 8 -> categoriaService.gestionarCategorias();
                 case 9 -> evaluacionService.evaluarEmpleado();
                 case 10 -> capacitacionService.gestionarCapacitaciones();
-                case 11 -> asignarMentor();
+                case 11 -> eliminarService.mostrarMenuEliminar(); // Llamada al menú de eliminaciones
+                case 12 -> asignarMentor();
                 case 0 -> System.out.println("¡Hasta pronto!");
                 default -> System.out.println("Opción inválida.");
             }

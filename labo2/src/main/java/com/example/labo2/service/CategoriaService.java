@@ -14,6 +14,11 @@ public class CategoriaService {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
+    public void eliminarPorId(Long id) {
+        categoriaRepository.deleteById(id);
+    }
+
+
     public List<Categoria> listarTodos() {
         return categoriaRepository.findAll();
     }

@@ -19,6 +19,10 @@ public class TecnologiaService {
     @Autowired
     private ProyectoService proyectoService;
 
+    public void eliminarPorId(Long id) {
+        tecnologiaRepository.deleteById(id);
+    }
+
     private final Scanner scanner = new Scanner(System.in);
 
     public void gestionarTecnologias() {

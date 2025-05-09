@@ -41,7 +41,12 @@ public class EmpleadoService {
     }
 
     public void eliminarPorId(Long id) {
-        empleadoRepository.deleteById(id);
+        try {
+            empleadoRepository.deleteById(id);
+            System.out.println("Empleado eliminado correctamente.");
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            System.err.println("Error al eliminar el empleado: No se puede eliminar porque está siendo referenciado por otros registros.");
+        }
     }
 
     public boolean existePorId(Long id) {

@@ -14,6 +14,10 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
+    public void eliminarPorId(Long id) {
+        clienteRepository.deleteById(id);
+    }
+
     public List<Cliente> listarTodos() {
         return clienteRepository.findAll();
     }

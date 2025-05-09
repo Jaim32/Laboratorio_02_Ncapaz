@@ -20,4 +20,8 @@ public class DepartamentoService {
     public Departamento guardar(Departamento departamento) {
         return departamentoRepository.save(departamento);
     }
+
+    public void eliminarPorId(Long id) {
+        departamentoRepository.deleteById(id);
+    }
 }
