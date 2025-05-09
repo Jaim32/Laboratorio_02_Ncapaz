@@ -61,6 +61,7 @@ public class Menu {
             System.out.println("║ 8. Categorías                        ║");
             System.out.println("║ 9. Evaluar empleado                  ║");
             System.out.println("║ 10. Capacitaciones                   ║");
+            System.out.println("║ 11. Asignar mentor                   ║");
             System.out.println("║ 0. Salir                             ║");
             System.out.println("╚══════════════════════════════════════╝");
             System.out.print("Selecciona una opción: ");
@@ -78,6 +79,7 @@ public class Menu {
                 case 8 -> categoriaService.gestionarCategorias();
                 case 9 -> evaluacionService.evaluarEmpleado();
                 case 10 -> capacitacionService.gestionarCapacitaciones();
+                case 11 -> asignarMentor();
                 case 0 -> System.out.println("¡Hasta pronto!");
                 default -> System.out.println("Opción inválida.");
             }
@@ -92,11 +94,25 @@ public class Menu {
         } else {
             System.out.println("Lista de empleados:");
             empleados.forEach(e -> {
-                System.out.print("• " + e.getId() + " - " + e.getNombre() + " " + e.getApellido());
+                System.out.println("• ID: " + e.getId());
+                System.out.println("  Nombre: " + e.getNombre());
+                System.out.println("  Apellido: " + e.getApellido());
+                System.out.println("  Email: " + e.getEmail());
+                System.out.println("  Puesto: " + e.getPuesto());
+                System.out.println("  Departamento(s):");
                 if (!e.getDepartamentos().isEmpty()) {
-                    System.out.print(" (Departamentos: ");
-                    e.getDepartamentos().forEach(d -> System.out.print(d.getNombre() + " "));
-                    System.out.print(")");
+                    e.getDepartamentos().forEach(d -> System.out.println("    - " + d.getNombre()));
+                } else {
+                    System.out.println("    No asignado.");
+                }
+                System.out.println("  Fecha de ingreso: " + e.getFechaIngreso());
+                System.out.println("  Mentores asignados:");
+                if (!e.getMentores().isEmpty()) {
+                    e.getMentores().forEach(m ->
+                            System.out.println("    - " + m.getId() + " - " + m.getNombre() + " " + m.getApellido())
+                    );
+                } else {
+                    System.out.println("    No tiene mentores asignados.");
                 }
                 System.out.println();
             });
@@ -300,5 +316,22 @@ public class Menu {
 
         departamentoService.guardar(departamento);
         System.out.println("Departamento creado correctamente.");
+    }
+
+    private void asignarMentor() {
+        System.out.print("Ingrese el ID del empleado al que desea asignar un mentor: ");
+        Long empleadoId = scanner.nextLong();
+        scanner.nextLine(); // Limpiar buffer
+
+        System.out.print("Ingrese el ID del mentor: ");
+        Long mentorId = scanner.nextLong();
+        scanner.nextLine(); // Limpiar buffer
+
+        try {
+            empleadoService.asignarMentor(empleadoId, mentorId);
+            System.out.println("Mentor asignado correctamente.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error al asignar mentor: " + e.getMessage());
+        }
     }
 }
