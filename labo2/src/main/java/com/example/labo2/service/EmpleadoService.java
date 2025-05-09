@@ -40,4 +40,18 @@ public class EmpleadoService {
     public boolean existePorId(Long id) {
         return empleadoRepository.existsById(id);
     }
+
+    @Transactional
+    public void asignarMentor(Long empleadoId, Long mentorId) {
+        Empleado empleado = empleadoRepository.findById(empleadoId)
+                .orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado"));
+        Empleado mentor = empleadoRepository.findById(mentorId)
+                .orElseThrow(() -> new IllegalArgumentException("Mentor no encontrado"));
+
+        empleado.getMentores().add(mentor);
+        mentor.getAprendices().add(empleado);
+
+        empleadoRepository.save(empleado);
+        empleadoRepository.save(mentor);
+    }
 }
