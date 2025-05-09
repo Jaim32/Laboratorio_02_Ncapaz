@@ -39,6 +39,9 @@ public class Menu {
     @Autowired
     private CapacitacionService capacitacionService;
 
+    @Autowired
+    private AreaService areaService;
+
     private final Scanner scanner = new Scanner(System.in);
 
     public void mostrar() {
@@ -222,6 +225,24 @@ public class Menu {
             System.out.println("El líder debe estar incluido en la lista de empleados.");
             return;
         }
+
+        System.out.println("Seleccione el área del proyecto:");
+        List<Area> areas = areaService.listarTodas();
+        areas.forEach(area -> System.out.println(area.getId() + ". " + area.getNombre() + " (Tarifa: " + area.getTarifa() + ")"));
+
+        Long areaId = scanner.nextLong();
+        scanner.nextLine(); // Limpiar buffer
+
+        Area area = areas.stream()
+                .filter(a -> a.getId().equals(areaId))
+                .findFirst()
+                .orElse(null);
+
+        if (area == null) {
+            System.out.println("Área no encontrada.");
+            return;
+        }
+        proyecto.setArea(area);
 
         try {
             proyectoService.guardar(proyecto, liderId, empleadosIds);

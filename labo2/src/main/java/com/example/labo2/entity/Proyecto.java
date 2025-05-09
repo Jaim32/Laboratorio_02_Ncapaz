@@ -12,16 +12,16 @@ public class Proyecto {
     private String codigo;
     private String nombre;
 
-    @ManyToOne
-    private Area area;
+    @ManyToOne(optional = false)
+    private Area area; // Relación obligatoria con Area
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Categoria categoria;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Cliente cliente;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Empleado lider;
 
     @ManyToMany
