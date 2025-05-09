@@ -33,6 +33,9 @@ public class Menu {
     @Autowired
     private CategoriaService categoriaService;
 
+    @Autowired
+    private EvaluacionService evaluacionService;
+
     private final Scanner scanner = new Scanner(System.in);
 
     public void mostrar() {
@@ -50,6 +53,7 @@ public class Menu {
             System.out.println("║ 6. Tecnologías                       ║");
             System.out.println("║ 7. Clientes                          ║");
             System.out.println("║ 8. Categorías                        ║");
+            System.out.println("║ 9. Evaluar empleado                  ║");
             System.out.println("║ 0. Salir                             ║");
             System.out.println("╚══════════════════════════════════════╝");
             System.out.print("Selecciona una opción: ");
@@ -65,6 +69,7 @@ public class Menu {
                 case 6 -> tecnologiaService.gestionarTecnologias(); // Llamada al servicio
                 case 7 -> clienteService.gestionarClientes();
                 case 8 -> categoriaService.gestionarCategorias();
+                case 9 -> evaluacionService.evaluarEmpleado();
                 case 0 -> System.out.println("¡Hasta pronto!");
                 default -> System.out.println("Opción inválida.");
             }
