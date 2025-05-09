@@ -29,7 +29,7 @@ public class ProyectoService {
 
     @Transactional(readOnly = true)
     public Optional<Proyecto> buscarPorId(Long id) {
-        return proyectoRepository.findById(id);
+        return proyectoRepository.findByIdWithDetails(id);
     }
 
     @Transactional
@@ -50,9 +50,27 @@ public class ProyectoService {
 
     @Transactional
     public Proyecto asignarEmpleados(Long proyectoId, Long liderId, List<Long> empleadosIds) {
-        Proyecto proyecto = proyectoRepository.findById(proyectoId)
+        Proyecto proyecto = proyectoRepository.findByIdWithDetails(proyectoId)
                 .orElseThrow(() -> new IllegalArgumentException("Proyecto no encontrado"));
+
+        if (proyecto.getLider() == null) {
+            throw new IllegalArgumentException("El proyecto no tiene un líder asignado.");
+        }
+
         validarEmpleadosYAsignar(proyecto, liderId, empleadosIds);
+        return proyectoRepository.save(proyecto);
+    }
+
+    @Transactional
+    public Proyecto asignarTecnologias(Long proyectoId, List<Long> tecnologiasIds) {
+        Proyecto proyecto = proyectoRepository.findByIdWithDetails(proyectoId)
+                .orElseThrow(() -> new IllegalArgumentException("Proyecto no encontrado"));
+
+        if (proyecto.getTecnologias() == null) {
+            proyecto.setTecnologias(new HashSet<>());
+        }
+
+
         return proyectoRepository.save(proyecto);
     }
 

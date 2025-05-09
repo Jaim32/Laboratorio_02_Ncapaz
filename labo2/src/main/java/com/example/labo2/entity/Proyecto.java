@@ -1,6 +1,7 @@
 package com.example.labo2.entity;
 
 import jakarta.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -12,23 +13,23 @@ public class Proyecto {
     private String codigo;
     private String nombre;
 
-    @ManyToOne(optional = false)
-    private Area area; // Relación obligatoria con Area
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    private Area area;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Categoria categoria;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Cliente cliente;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Empleado lider;
 
-    @ManyToMany
-    private Set<Empleado> empleados;
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Set<Empleado> empleados = new HashSet<>();
 
-    @ManyToMany
-    private Set<Tecnologia> tecnologias;
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Set<Tecnologia> tecnologias = new HashSet<>();
 
     // Getters y Setters
     public Long getId() {

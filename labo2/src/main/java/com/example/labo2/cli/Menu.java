@@ -157,17 +157,23 @@ public class Menu {
                 System.out.println("  Cliente: " + (p.getCliente() != null ? p.getCliente().getNombre() : "No asignado"));
                 System.out.println("  Categoría: " + (p.getCategoria() != null ? p.getCategoria().getNombre() : "No asignada"));
                 System.out.println("  Líder: " + (p.getLider() != null ? p.getLider().getNombre() + " " + p.getLider().getApellido() : "No asignado"));
+                System.out.println("  Área: " + (p.getArea() != null ? p.getArea().getNombre() + " (Costo: " + p.getArea().getTarifa() + ")" : "No asignada"));
                 System.out.println("  Empleados participantes:");
                 if (p.getEmpleados() != null && !p.getEmpleados().isEmpty()) {
                     p.getEmpleados().forEach(e -> System.out.println("    - " + e.getNombre() + " " + e.getApellido()));
                 } else {
                     System.out.println("    No hay empleados asignados.");
                 }
+                System.out.println("  Tecnologías asignadas:");
+                if (p.getTecnologias() != null && !p.getTecnologias().isEmpty()) {
+                    p.getTecnologias().forEach(t -> System.out.println("    - " + t.getNombre()));
+                } else {
+                    System.out.println("    No hay tecnologías asignadas.");
+                }
                 System.out.println();
             });
         }
     }
-
     private void crearProyecto() {
         Proyecto proyecto = new Proyecto();
 

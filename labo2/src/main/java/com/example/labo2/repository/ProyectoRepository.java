@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProyectoRepository extends JpaRepository<Proyecto, Long> {
 
@@ -12,6 +13,16 @@ public interface ProyectoRepository extends JpaRepository<Proyecto, Long> {
             "LEFT JOIN FETCH p.categoria " +
             "LEFT JOIN FETCH p.cliente " +
             "LEFT JOIN FETCH p.lider " +
-            "LEFT JOIN FETCH p.empleados")
+            "LEFT JOIN FETCH p.empleados " +
+            "LEFT JOIN FETCH p.tecnologias " +
+            "WHERE p.id = :id")
+    Optional<Proyecto> findByIdWithDetails(Long id);
+
+    @Query("SELECT p FROM Proyecto p " +
+            "LEFT JOIN FETCH p.categoria " +
+            "LEFT JOIN FETCH p.cliente " +
+            "LEFT JOIN FETCH p.lider " +
+            "LEFT JOIN FETCH p.empleados " +
+            "LEFT JOIN FETCH p.tecnologias")
     List<Proyecto> findAllWithDetails();
 }
