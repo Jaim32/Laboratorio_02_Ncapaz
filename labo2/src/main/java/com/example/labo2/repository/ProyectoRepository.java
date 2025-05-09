@@ -25,4 +25,7 @@ public interface ProyectoRepository extends JpaRepository<Proyecto, Long> {
             "LEFT JOIN FETCH p.empleados " +
             "LEFT JOIN FETCH p.tecnologias")
     List<Proyecto> findAllWithDetails();
+
+    @Query(value = "SELECT p.nombre, p.descripcion FROM proyecto p", nativeQuery = true)
+    List<Object[]> findAllProjectNamesAndDescriptions();
 }
