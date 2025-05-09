@@ -10,8 +10,14 @@ public class Proyecto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String codigo;
+
+    @Column(nullable = false)
     private String nombre;
+
+    @Column(length = 500)
+    private String descripcion;
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Area area;
@@ -26,9 +32,19 @@ public class Proyecto {
     private Empleado lider;
 
     @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "proyecto_empleado",
+            joinColumns = @JoinColumn(name = "proyecto_id"),
+            inverseJoinColumns = @JoinColumn(name = "empleado_id")
+    )
     private Set<Empleado> empleados = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "proyecto_tecnologia",
+            joinColumns = @JoinColumn(name = "proyecto_id"),
+            inverseJoinColumns = @JoinColumn(name = "tecnologia_id")
+    )
     private Set<Tecnologia> tecnologias = new HashSet<>();
 
     // Getters y Setters
@@ -49,6 +65,12 @@ public class Proyecto {
     }
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+    public String getDescripcion() {
+        return descripcion;
+    }
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
     public Area getArea() {
         return area;

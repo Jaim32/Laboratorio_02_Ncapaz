@@ -45,6 +45,9 @@ public class Menu {
     @Autowired
     private EliminarService eliminarService;
 
+    @Autowired
+    private EditarService editarService;
+
 
     private final Scanner scanner = new Scanner(System.in);
 
@@ -67,6 +70,7 @@ public class Menu {
             System.out.println("║ 10. Capacitaciones                   ║");
             System.out.println("║ 11. Eliminar                         ║");
             System.out.println("║ 12. Asignar mentor                   ║");
+            System.out.println("║ 13. Editar                           ║");
             System.out.println("║ 0. Salir                             ║");
             System.out.println("╚══════════════════════════════════════╝");
             System.out.print("Selecciona una opción: ");
@@ -86,6 +90,7 @@ public class Menu {
                 case 10 -> capacitacionService.gestionarCapacitaciones();
                 case 11 -> eliminarService.mostrarMenuEliminar(); // Llamada al menú de eliminaciones
                 case 12 -> asignarMentor();
+                case 13 -> editarService.mostrarMenuEditar(); // Llamada al menú de ediciones
                 case 0 -> System.out.println("¡Hasta pronto!");
                 default -> System.out.println("Opción inválida.");
             }
@@ -205,6 +210,9 @@ public class Menu {
         System.out.print("Nombre del proyecto: ");
         proyecto.setNombre(scanner.nextLine());
 
+        System.out.print("Descripción del proyecto: ");
+        proyecto.setDescripcion(scanner.nextLine());
+
         System.out.print("ID del cliente: ");
         Long clienteId = scanner.nextLong();
         scanner.nextLine(); // Limpiar buffer
@@ -279,7 +287,6 @@ public class Menu {
             System.out.println("Error al crear el proyecto: " + e.getMessage());
         }
     }
-
     private void gestionarDepartamentos() {
         int opcion;
 
