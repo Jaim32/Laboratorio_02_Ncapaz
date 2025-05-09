@@ -1,1 +1,1 @@
-# Laboratorio_02_Ncapaz
+# Laboratorio_02_Ncapas
