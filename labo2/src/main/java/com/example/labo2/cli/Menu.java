@@ -1,16 +1,19 @@
 package com.example.labo2.cli;
 
+import com.example.labo2.entity.Departamento;
 import com.example.labo2.entity.Empleado;
 import com.example.labo2.entity.Proyecto;
+import com.example.labo2.service.DepartamentoService;
 import com.example.labo2.service.EmpleadoService;
 import com.example.labo2.service.ProyectoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
+import java.util.Set;
 
 @Component
 public class Menu {
@@ -20,6 +23,9 @@ public class Menu {
 
     @Autowired
     private ProyectoService proyectoService;
+
+    @Autowired
+    private DepartamentoService departamentoService;
 
     private final Scanner scanner = new Scanner(System.in);
 
@@ -34,6 +40,7 @@ public class Menu {
             System.out.println("║ 2. Crear nuevo empleado              ║");
             System.out.println("║ 3. Listar proyectos                  ║");
             System.out.println("║ 4. Crear nuevo proyecto              ║");
+            System.out.println("║ 5. Departamentos                     ║");
             System.out.println("║ 0. Salir                             ║");
             System.out.println("╚══════════════════════════════════════╝");
             System.out.print("Selecciona una opción: ");
@@ -45,6 +52,7 @@ public class Menu {
                 case 2 -> crearEmpleado();
                 case 3 -> listarProyectos();
                 case 4 -> crearProyecto();
+                case 5 -> gestionarDepartamentos();
                 case 0 -> System.out.println("¡Hasta pronto!");
                 default -> System.out.println("Opción inválida.");
             }
@@ -58,7 +66,15 @@ public class Menu {
             System.out.println("No hay empleados registrados.");
         } else {
             System.out.println("Lista de empleados:");
-            empleados.forEach(e -> System.out.println("• " + e.getId() + " - " + e.getNombre() + " " + e.getApellido()));
+            empleados.forEach(e -> {
+                System.out.print("• " + e.getId() + " - " + e.getNombre() + " " + e.getApellido());
+                if (!e.getDepartamentos().isEmpty()) {
+                    System.out.print(" (Departamentos: ");
+                    e.getDepartamentos().forEach(d -> System.out.print(d.getNombre() + " "));
+                    System.out.print(")");
+                }
+                System.out.println();
+            });
         }
     }
 
@@ -74,8 +90,30 @@ public class Menu {
         System.out.print("Email: ");
         emp.setEmail(scanner.nextLine());
 
+        System.out.print("Puesto: ");
+        emp.setPuesto(scanner.nextLine());
+
         emp.setFechaIngreso(LocalDate.now());
-        emp.setPuesto("Sin definir");
+
+        System.out.print("ID del departamento al que pertenece: ");
+        Long departamentoId = scanner.nextLong();
+        scanner.nextLine(); // Limpiar buffer
+
+        Departamento departamento = departamentoService.listarTodos()
+                .stream()
+                .filter(d -> d.getId().equals(departamentoId))
+                .findFirst()
+                .orElse(null);
+
+        if (departamento == null) {
+            System.out.println("Departamento no encontrado.");
+            return;
+        }
+
+        // Crear un conjunto y agregar el departamento
+        Set<Departamento> departamentos = new HashSet<>();
+        departamentos.add(departamento);
+        emp.setDepartamentos(departamentos);
 
         empleadoService.guardar(emp);
         System.out.println("Empleado creado correctamente.");
@@ -100,8 +138,72 @@ public class Menu {
         System.out.print("Nombre del proyecto: ");
         proyecto.setNombre(scanner.nextLine());
 
+        System.out.print("ID del líder del proyecto: ");
+        Long liderId = scanner.nextLong();
+        scanner.nextLine(); // Limpiar buffer
 
-        proyectoService.guardar(proyecto);
-        System.out.println("Proyecto creado correctamente.");
+        System.out.print("IDs de los empleados participantes (separados por comas): ");
+        String empleadosInput = scanner.nextLine();
+        List<Long> empleadosIds = List.of(empleadosInput.split(","))
+                .stream()
+                .map(String::trim)
+                .map(Long::parseLong)
+                .toList();
+
+        if (!empleadosIds.contains(liderId)) {
+            System.out.println("El líder debe estar incluido en la lista de empleados.");
+            return;
+        }
+
+        try {
+            proyectoService.guardar(proyecto, liderId, empleadosIds);
+            System.out.println("Proyecto creado correctamente.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error al crear el proyecto: " + e.getMessage());
+        }
+    }
+
+    private void gestionarDepartamentos() {
+        int opcion;
+
+        do {
+            System.out.println("\n╔══════════════════════════════════════╗");
+            System.out.println("║        GESTIÓN DE DEPARTAMENTOS      ║");
+            System.out.println("╠══════════════════════════════════════╣");
+            System.out.println("║ 1. Ver departamentos                 ║");
+            System.out.println("║ 2. Crear nuevo departamento          ║");
+            System.out.println("║ 0. Volver al menú principal          ║");
+            System.out.println("╚══════════════════════════════════════╝");
+            System.out.print("Selecciona una opción: ");
+            opcion = scanner.nextInt();
+            scanner.nextLine(); // Limpiar buffer
+
+            switch (opcion) {
+                case 1 -> listarDepartamentos();
+                case 2 -> crearDepartamento();
+                case 0 -> System.out.println("Volviendo al menú principal...");
+                default -> System.out.println("Opción inválida.");
+            }
+        } while (opcion != 0);
+    }
+
+    private void listarDepartamentos() {
+        List<Departamento> departamentos = departamentoService.listarTodos();
+        if (departamentos.isEmpty()) {
+            System.out.println("No hay departamentos registrados.");
+        } else {
+            System.out.println("Lista de departamentos:");
+            departamentos.forEach(d -> System.out.println("• " + d.getId() + " - " + d.getNombre()));
+        }
+    }
+
+    private void crearDepartamento() {
+        Departamento departamento = new Departamento();
+
+        System.out.print("Nombre del departamento: ");
+        departamento.setNombre(scanner.nextLine());
+
+        departamentoService.guardar(departamento);
+        System.out.println("Departamento creado correctamente.");
     }
 }

@@ -1,25 +1,37 @@
 package com.example.labo2.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Departamento {
-    // Getters y Setters
-    @Setter
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
-    @Getter
     private String nombre;
 
-    @OneToMany(mappedBy = "departamento")
-    private List<Empleado> empleados;
+    @ManyToMany(mappedBy = "departamentos")
+    private Set<Empleado> empleados = new HashSet<>();
 
+    // Getters y Setters
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public String getNombre() {
+        return nombre;
+    }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+    public Set<Empleado> getEmpleados() {
+        return empleados;
+    }
+    public void setEmpleados(Set<Empleado> empleados) {
+        this.empleados = empleados;
+    }
 }

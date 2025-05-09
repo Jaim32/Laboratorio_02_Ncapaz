@@ -11,7 +11,6 @@ import java.util.Set;
 
 @Entity
 public class Empleado extends Persona {
-    // Getters y Setters
     @Setter
     @Getter
     @Id
@@ -21,14 +20,20 @@ public class Empleado extends Persona {
     @Setter
     @Getter
     private LocalDate fechaIngreso;
+
     @Setter
     @Getter
     private String puesto;
 
     @Setter
     @Getter
-    @ManyToOne
-    private Departamento departamento;
+    @ManyToMany
+    @JoinTable(
+            name = "empleado_departamento",
+            joinColumns = @JoinColumn(name = "empleado_id"),
+            inverseJoinColumns = @JoinColumn(name = "departamento_id")
+    )
+    private Set<Departamento> departamentos = new HashSet<>();
 
     @Setter
     @Getter
@@ -60,5 +65,4 @@ public class Empleado extends Persona {
 
     @OneToMany(mappedBy = "lider")
     private List<Proyecto> lideraProyectos;
-
 }
